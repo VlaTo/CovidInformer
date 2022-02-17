@@ -1,13 +1,12 @@
-﻿using System;
+﻿using CovidInformer.Core.OpenApi.Entities;
+using CovidInformer.Entities;
+using LibraProgramming.Data.OpenApi.Core;
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using CovidInformer.Core.OpenApi.Entities;
-using CovidInformer.Entities;
-using CovidInformer.Services;
-using LibraProgramming.Data.OpenApi.Core;
 
 namespace CovidInformer.Core.OpenApi.Providers
 {
@@ -47,7 +46,7 @@ namespace CovidInformer.Core.OpenApi.Providers
                             if (null == locationsInfo)
                             {
 
-                                return Covid19Data.Empty;
+                                return null;
                             }
 
                             var builder = Covid19DataBuilder.From(locationsInfo);
@@ -60,7 +59,7 @@ namespace CovidInformer.Core.OpenApi.Providers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return Covid19Data.Empty;
+                return null;
             }
         }
     }

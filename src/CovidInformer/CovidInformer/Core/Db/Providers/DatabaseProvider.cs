@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using CovidInformer.Entities;
 using CovidInformer.Services;
 using LibraProgramming.Data.OpenApi.Core;
+using LibraProgramming.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CovidInformer.Core.Db.Providers
@@ -31,8 +33,9 @@ namespace CovidInformer.Core.Db.Providers
             {
                 return null;
             }
-            
-            var builder = new Covid19DataBuilder();
+
+
+            var data = new Covid19Data(Array.Empty<CountryInfo>(), new BigInteger(0UL), latests.Updated);
 
             foreach (var counter in latests.Counters)
             {
@@ -41,7 +44,7 @@ namespace CovidInformer.Core.Db.Providers
                 // latests.Updated
             }
 
-
+            return data;
         }
 
         public void Dispose()
