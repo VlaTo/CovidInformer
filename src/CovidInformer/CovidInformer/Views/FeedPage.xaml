@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage 
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:CovidInformer.ViewModels"  
+    xmlns:model="clr-namespace:CovidInformer.Models"  
+    xmlns:resources="clr-namespace:CovidInformer.Resources"  
+    x:Name="BrowseItemsPage"
+    x:Class="CovidInformer.Views.FeedPage"
+    x:DataType="local:FeedPageViewModel"
+    BindingContext="{Binding Path=ItemsViewModel, Source={StaticResource Key=ViewModelLocator}}"
+    Title="{Binding Title}"
+    BackgroundColor="Gray">
+
+    <!--<ContentPage.ToolbarItems>
+        <ToolbarItem
+            Text="Add"
+            Command="{Binding AddItemCommand}"
+        />
+    </ContentPage.ToolbarItems>-->
+
+    <!--
+      x:DataType enables compiled bindings for better performance and compile time validation of binding expressions.
+      https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/data-binding/compiled-bindings
+    -->
+    <RefreshView
+        RefreshColor="Black"
+        Command="{Binding Refresh}"
+        IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+        <StackLayout>
+            <SearchBar
+                SearchCommand="{Binding Path=Search}"
+                SearchCommandParameter="{Binding Source={x:RelativeSource Self}, Path=Text}"
+            />
+            <CollectionView
+                x:Name="ItemsListView"
+                ItemsSource="{Binding Items}"
+                SelectionMode="None"
+                ItemSizingStrategy="MeasureAllItems">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout
+                        Orientation="Vertical"
+                        ItemSpacing="4"
+                    />
+                </CollectionView.ItemsLayout>
+                <CollectionView.EmptyView>
+                    <Label
+                        Text="{x:Static resources:Resource.EmptyContentLabel}"
+                    />
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate
+                        x:DataType="model:Item">
+                        <Frame
+                            BackgroundColor="Transparent"
+                            BorderColor="White"
+                            CornerRadius="8"
+                            HorizontalOptions="FillAndExpand"
+                            VerticalOptions="FillAndExpand"
+                            HasShadow="True">
+                            <StackLayout
+                                Padding="10">
+                                <Label
+                                    Text="{Binding Text}" 
+                                    LineBreakMode="NoWrap" 
+                                    Style="{DynamicResource ListItemTextStyle}" 
+                                    FontSize="16"
+                                />
+                                <Label
+                                    Text="{Binding Description}" 
+                                    LineBreakMode="NoWrap"
+                                    Style="{DynamicResource ListItemDetailTextStyle}"
+                                    FontSize="13"
+                                />
+                                <Label>
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <FormattedString.Spans>
+                                                <Span Text="{x:Static resources:Resource.ItemTotalLabel}" />
+                                                <Span FontAttributes="Bold" Text="{Binding Path=Total, StringFormat='{0:N0}'}" />
+                                            </FormattedString.Spans>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer 
+                                        NumberOfTapsRequired="1"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:FeedPageViewModel}}, Path=ItemTapped}"		
+                                        CommandParameter="{Binding .}"
+                                    />
+                                </StackLayout.GestureRecognizers>
+                            </StackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </StackLayout>
+    </RefreshView>
+</ContentPage>
