@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
-using System.Numerics;
 
-namespace LibraProgramming.Domain.Entities
+namespace CovidInformer.Entities
 {
     public readonly struct CountryInfo
     {
@@ -10,12 +9,12 @@ namespace LibraProgramming.Domain.Entities
             get;
         }
 
-        public BigInteger Total
+        public ulong Total
         {
             get;
         }
 
-        public CountryInfo(RegionInfo region, BigInteger total)
+        public CountryInfo(RegionInfo region, ulong total)
         {
             Region = region;
             Total = total;

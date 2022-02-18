@@ -1,9 +1,8 @@
 ﻿using CovidInformer.Core;
 using CovidInformer.Core.Db;
 using CovidInformer.Core.OpenApi.Providers;
-using System.Threading;
 using CovidInformer.Services;
-using Microsoft.EntityFrameworkCore;
+using System.Threading;
 using Xamarin.Forms;
 
 namespace CovidInformer
@@ -28,7 +27,7 @@ namespace CovidInformer
             var db = DependencyService.Resolve<DatabaseContext>();
             
             db.Database.EnsureCreated();
-            db.Database.Migrate();
+            //db.Database.Migrate();
 
             var taskQueue = DependencyService.Resolve<TaskQueue>();
             

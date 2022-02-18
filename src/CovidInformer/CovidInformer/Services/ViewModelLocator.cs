@@ -1,5 +1,4 @@
 ﻿using CovidInformer.Core;
-using CovidInformer.Core.Db;
 using CovidInformer.ViewModels;
 using Xamarin.Forms;
 
@@ -11,10 +10,9 @@ namespace CovidInformer.Services
         {
             get
             {
-                var dataProvider = DependencyService.Resolve<IDataProvider>();
-                var database = DependencyService.Resolve<DatabaseContext>();
+                var dataService = DependencyService.Resolve<IDataService>();
                 var taskQueue = DependencyService.Resolve<TaskQueue>();
-                return new FeedPageViewModel(database, dataProvider, taskQueue);
+                return new FeedPageViewModel(dataService, taskQueue);
             }
         } 
     }

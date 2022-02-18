@@ -8,16 +8,23 @@
     x:Name="BrowseItemsPage"
     x:Class="CovidInformer.Views.FeedPage"
     x:DataType="local:FeedPageViewModel"
-    BindingContext="{Binding Path=ItemsViewModel, Source={StaticResource Key=ViewModelLocator}}"
+    BindingContext="{Binding Path=FeedPageViewModel, Source={StaticResource Key=ViewModelLocator}}"
     Title="{Binding Title}"
     BackgroundColor="Gray">
 
-    <!--<ContentPage.ToolbarItems>
+    <ContentPage.ToolbarItems>
         <ToolbarItem
-            Text="Add"
-            Command="{Binding AddItemCommand}"
-        />
-    </ContentPage.ToolbarItems>-->
+            Text="Refresh"
+            Command="{Binding Refresh}">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource
+                    FontFamily="FA"
+                    Color="White"
+                    Glyph="&#xF02E;"
+                />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+    </ContentPage.ToolbarItems>
 
     <!--
       x:DataType enables compiled bindings for better performance and compile time validation of binding expressions.

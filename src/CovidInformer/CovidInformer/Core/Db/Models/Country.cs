@@ -16,8 +16,25 @@ namespace CovidInformer.Core.Db.Models
             set;
         }
 
+        [MaxLength(100)]
         [Column("DisplayName", TypeName = "nvarchar(100)")]
         public string DisplayName
+        {
+            get;
+            set;
+        }
+
+        [MaxLength(255)]
+        [Column("NativeName", TypeName = "nvarchar(255)")]
+        public string NativeName
+        {
+            get;
+            set;
+        }
+
+        [MaxLength(2)]
+        [Column("RegionName", TypeName = "char(2)")]
+        public string TwoLetterISORegionName
         {
             get;
             set;

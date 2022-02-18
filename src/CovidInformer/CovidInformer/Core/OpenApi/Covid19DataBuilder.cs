@@ -1,19 +1,19 @@
 ﻿using System;
-using LibraProgramming.Domain.Entities;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
 using CovidInformer.Core.OpenApi.Entities;
 using CovidInformer.Entities;
 
-namespace LibraProgramming.Data.OpenApi.Core
+namespace CovidInformer.Core.OpenApi
 {
     internal sealed class Covid19DataBuilder
     {
-        private readonly Dictionary<RegionInfo, CountryInfo> countries;
-        private readonly Uri source;
-        private readonly BigInteger latest;
-        private readonly DateTime updated;
+        private IEnumerable<CountryInfo> countries;
+        private Uri source;
+        private ulong latest;
+        private DateTime updated;
 
         public static Covid19DataBuilder From(ConfirmedCasesInfo confirmedCasesInfo)
         {
@@ -29,7 +29,7 @@ namespace LibraProgramming.Data.OpenApi.Core
                 try
                 {
                     var region = new RegionInfo(countryInfo.CountryCode);
-                    var latest = new BigInteger(countryInfo.Latest);
+                    // var latest = new BigInteger(countryInfo.Latest);
 
                     // countryInfo.Country
                     // countryInfo.CountryCode
@@ -39,12 +39,12 @@ namespace LibraProgramming.Data.OpenApi.Core
 
                     if (false == countries.TryGetValue(region, out var ci))
                     {
-                        ci = new CountryInfo(region, latest);
+                        ci = new CountryInfo(region, countryInfo.Latest);
                         countries.Add(region, ci);
                     }
                     else
                     {
-                        ci = new CountryInfo(region, ci.Total + latest);
+                        ci = new CountryInfo(region, ci.Total + countryInfo.Latest);
                         countries[region] = ci;
                     }
                     
@@ -70,35 +70,43 @@ namespace LibraProgramming.Data.OpenApi.Core
 
 
             }
-
-            var builder = new Covid19DataBuilder(countries, confirmedCasesInfo.Source, confirmedCasesInfo.Latest, confirmedCasesInfo.Updated);
+            
+            var builder = new Covid19DataBuilder()
+                .SetCountries(countries.Values)
+                .SetSource(confirmedCasesInfo.Source)
+                .SetLatest(confirmedCasesInfo.Latest)
+                .SetUpdated(confirmedCasesInfo.Updated);
 
             return builder;
         }
 
-        private Covid19DataBuilder(
-            Dictionary<RegionInfo, CountryInfo> countries,
-            Uri source,
-            BigInteger latest,
-            DateTime updated)
+        public Covid19DataBuilder SetCountries(IEnumerable<CountryInfo> value)
         {
-            this.countries = countries;
-            this.source = source;
-            this.latest = latest;
-            this.updated = updated;
+            countries = value ?? Enumerable.Empty<CountryInfo>();
+            return this;
+        }
+
+        public Covid19DataBuilder SetLatest(ulong value)
+        {
+            latest = value;
+            return this;
+        }
+
+        public Covid19DataBuilder SetUpdated(DateTime value)
+        {
+            updated = value;
+            return this;
+        }
+
+        public Covid19DataBuilder SetSource(Uri value)
+        {
+            source = value;
+            return this;
         }
 
         public Covid19Data Build()
         {
-            var collection = new List<CountryInfo>();
-
-            foreach (var kvp in countries)
-            {
-                collection.Add(kvp.Value);
-            }
-
-            var data = new Covid19Data(collection.AsReadOnly(), latest, updated);
-
+            var data = new Covid19Data(countries.ToArray(), latest, updated);
             return data;
         }
     }

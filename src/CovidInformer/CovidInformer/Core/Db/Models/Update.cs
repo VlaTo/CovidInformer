@@ -18,14 +18,13 @@ namespace CovidInformer.Core.Db.Models
         }
 
         [Column("Updated")]
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.Date)]
         public DateTime Updated
         {
             get;
             set;
         }
-
-
+        
         public ICollection<Counter> Counters
         {
             get;

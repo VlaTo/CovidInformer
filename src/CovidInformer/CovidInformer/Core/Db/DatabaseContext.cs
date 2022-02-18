@@ -1,9 +1,8 @@
-﻿using System;
-using System.IO;
-using CovidInformer.Core.Db.Models;
+﻿using CovidInformer.Core.Db.Models;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Xamarin.Forms;
+using System;
+using System.IO;
 
 namespace CovidInformer.Core.Db
 {
@@ -31,37 +30,10 @@ namespace CovidInformer.Core.Db
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            string dataSource;
-
-            switch (Device.RuntimePlatform)
-            {
-                case Device.Android:
-                {
-                    var basePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-                    
-                    dataSource = Path.Combine(basePath, Filename);
-
-                    break;
-                }
-
-                case Device.UWP:
-                {
-                    var basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                    
-                    dataSource = Path.Combine(basePath, Filename);
-                        
-                    break;
-                }
-
-                default:
-                {
-                    throw new PlatformNotSupportedException();
-                }
-            }
-
+            var basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var connectionBuilder = new SqliteConnectionStringBuilder
             {
-                DataSource = dataSource,
+                DataSource = Path.Combine(basePath, Filename),
                 Cache = SqliteCacheMode.Private,
                 Mode = SqliteOpenMode.ReadWriteCreate
             };

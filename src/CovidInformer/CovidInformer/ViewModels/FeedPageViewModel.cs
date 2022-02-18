@@ -1,6 +1,6 @@
 ﻿using CovidInformer.Core;
 using CovidInformer.Models;
-using LibraProgramming.Domain.Entities;
+using CovidInformer.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,18 +11,16 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using CovidInformer.Core.Db;
-using CovidInformer.Services;
+using CovidInformer.Entities;
 using Xamarin.Forms;
 
 namespace CovidInformer.ViewModels
 {
     public class FeedPageViewModel : BaseViewModel
     {
-        private readonly DatabaseContext databaseContext;
-        private readonly IDataProvider dataProvider;
+        private readonly IDataService dataService;
         private readonly TaskQueue taskQueue;
-        private IReadOnlyList<CountryInfo> data;
+        private IReadOnlyList<CountryInfo> items;
         private string filter;
         private DateTime updated;
         private BigInteger total;
@@ -55,46 +53,40 @@ namespace CovidInformer.ViewModels
         }
 
         public FeedPageViewModel(
-            DatabaseContext databaseContext,
-            IDataProvider dataProvider,
+            IDataService dataService,
             TaskQueue taskQueue)
         {
-            this.databaseContext = databaseContext;
-            this.dataProvider = dataProvider;
+            this.dataService = dataService;
             this.taskQueue = taskQueue;
 
-            Title = "Browse";
+            items = null;
+            // Title = "Browse";
+
             Items = new ObservableCollection<Item>();
             Refresh = new Command(PerformRefresh);
             Search = new Command<string>(PerformSearch);
+            
+            IsBusy = true;
+
+            taskQueue.EnqueueTask(ExecuteLoadItemsCommand);
         }
 
-        async Task ExecuteLoadItemsCommand()
+        private async Task ExecuteLoadItemsCommand()
         {
             try
             {
-                var countries = databaseContext.Countries.OrderBy(entity => entity.DisplayName);
-                    
+                var data = await dataService.GetDataAsync(CancellationToken.None);
 
-                var covid19Data = await dataProvider.GetDataAsync(CancellationToken.None);
-
-                Device.BeginInvokeOnMainThread(() =>
+                if (null != data)
                 {
-                    Updated = covid19Data.Updated;
-                    Total = covid19Data.Total;
-
-                    AssignItems(covid19Data.Countries);
-
-                    foreach (var ci in covid19Data.Countries)
+                    Device.BeginInvokeOnMainThread(() =>
                     {
-                        Items.Add(new Item
-                        {
-                            Id = ci.Region.GeoId,
-                            Text = $"{ci.Region.EnglishName} ({ci.Region.DisplayName})",
-                            Description = ci.Total.ToString()
-                        });
-                    }
-                });
+                        Updated = data.Updated;
+                        Total = data.Total;
+
+                        AssignItems(data.Countries);
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -106,23 +98,34 @@ namespace CovidInformer.ViewModels
             }
         }
 
-        public void OnAppearing()
+        private async Task ExecuteRefreshItemsCommand()
         {
-            if (IsBusy)
+            try
             {
-                return;
+                await dataService.UpdateDataAsync(CancellationToken.None);
+                
+                var data = await dataService.GetDataAsync(CancellationToken.None);
+
+                if (null != data)
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        Updated = data.Updated;
+                        Total = data.Total;
+
+                        AssignItems(data.Countries);
+                    });
+                }
             }
-
-            IsBusy = true;
-
-            taskQueue.EnqueueTask(ExecuteLoadItemsCommand);
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
-
-
-        /*private async void OnAddItem(object obj)
-        {
-            await Shell.Current.GoToAsync(nameof(NewItemPage));
-        }*/
 
         /*async void OnItemSelected(Item item)
         {
@@ -132,9 +135,10 @@ namespace CovidInformer.ViewModels
             // This will push the ItemDetailPage onto the navigation stack
             await Shell.Current.GoToAsync($"{nameof(ItemDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}");
         }*/
+
         private void AssignItems(IReadOnlyList<CountryInfo> countries)
         {
-            data = countries;
+            items = countries;
             PerformFiltering();
         }
 
@@ -150,7 +154,7 @@ namespace CovidInformer.ViewModels
                 ? new Func<string, bool>(NoFilter)
                 : new Func<string, bool>(Filter);
 
-            foreach (var countryInfo in data)
+            foreach (var countryInfo in items)
             {
                 var name = countryInfo.Region.EnglishName;
 
@@ -193,7 +197,9 @@ namespace CovidInformer.ViewModels
 
         private void PerformRefresh()
         {
-            ;
+            IsBusy = true;
+
+            taskQueue.EnqueueTask(ExecuteRefreshItemsCommand);
         }
 
         private void PerformSearch(string pattern)
