@@ -1,8 +1,7 @@
 ﻿using CovidInformer.Core;
 using CovidInformer.Core.Db;
-using CovidInformer.Core.OpenApi.Providers;
-using CovidInformer.Services;
 using System.Threading;
+using CovidInformer.Core.OpenApi.Providers;
 using Xamarin.Forms;
 
 namespace CovidInformer
@@ -15,9 +14,8 @@ namespace CovidInformer
             InitializeComponent();
 
             DependencyService.RegisterSingleton(TaskQueue.GetInstance());
-            DependencyService.Register<OpenApiDataProvider>();
-            DependencyService.Register<DatabaseContext>();
-            DependencyService.Register<IDataService, DataService>();
+            DependencyService.RegisterSingleton(new DatabaseContext());
+            DependencyService.RegisterSingleton(new OpenApiDataProvider());
 
             MainPage = new AppShell();
         }

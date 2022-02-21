@@ -1,15 +1,13 @@
-﻿using CovidInformer.Entities;
+﻿using CovidInformer.Core.OpenApi;
+using CovidInformer.Entities;
 using CovidInformer.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using CovidInformer.Core.Db.Models;
-using CovidInformer.Core.OpenApi;
 
 namespace CovidInformer.Core.Db.Providers
 {

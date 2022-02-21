@@ -5,7 +5,6 @@
     xmlns:local="clr-namespace:CovidInformer.ViewModels"  
     xmlns:model="clr-namespace:CovidInformer.Models"  
     xmlns:resources="clr-namespace:CovidInformer.Resources"  
-    x:Name="BrowseItemsPage"
     x:Class="CovidInformer.Views.FeedPage"
     x:DataType="local:FeedPageViewModel"
     BindingContext="{Binding Path=FeedPageViewModel, Source={StaticResource Key=ViewModelLocator}}"
@@ -14,13 +13,12 @@
 
     <ContentPage.ToolbarItems>
         <ToolbarItem
-            Text="Refresh"
             Command="{Binding Refresh}">
             <ToolbarItem.IconImageSource>
                 <FontImageSource
-                    FontFamily="FA"
+                    FontFamily="MaterialIcons"
                     Color="White"
-                    Glyph="&#xF02E;"
+                    Glyph="&#xE028;"
                 />
             </ToolbarItem.IconImageSource>
         </ToolbarItem>
@@ -34,27 +32,39 @@
         RefreshColor="Black"
         Command="{Binding Refresh}"
         IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
-        <StackLayout>
+        <StackLayout
+            Orientation="Vertical">
+            
             <SearchBar
                 SearchCommand="{Binding Path=Search}"
                 SearchCommandParameter="{Binding Source={x:RelativeSource Self}, Path=Text}"
             />
+            
+            <DatePicker
+                FontSize="Body"
+                Format="d"
+                Date="{Binding Path=Updated, Mode=TwoWay}"
+            />
+
             <CollectionView
                 x:Name="ItemsListView"
                 ItemsSource="{Binding Items}"
                 SelectionMode="None"
-                ItemSizingStrategy="MeasureAllItems">
+                ItemSizingStrategy="MeasureFirstItem">
+                
                 <CollectionView.ItemsLayout>
                     <LinearItemsLayout
                         Orientation="Vertical"
                         ItemSpacing="4"
                     />
                 </CollectionView.ItemsLayout>
+                
                 <CollectionView.EmptyView>
                     <Label
                         Text="{x:Static resources:Resource.EmptyContentLabel}"
                     />
                 </CollectionView.EmptyView>
+                
                 <CollectionView.ItemTemplate>
                     <DataTemplate
                         x:DataType="model:Item">
@@ -85,6 +95,7 @@
                                             <FormattedString.Spans>
                                                 <Span Text="{x:Static resources:Resource.ItemTotalLabel}" />
                                                 <Span FontAttributes="Bold" Text="{Binding Path=Total, StringFormat='{0:N0}'}" />
+                                                <Span Text="{Binding Path=Total, Converter={x:StaticResource PluralConverter}, ConverterParameter='People'}" />
                                             </FormattedString.Spans>
                                         </FormattedString>
                                     </Label.FormattedText>

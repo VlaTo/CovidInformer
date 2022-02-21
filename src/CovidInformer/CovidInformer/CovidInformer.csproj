@@ -17,10 +17,12 @@
 
   <ItemGroup>
     <None Remove="Resources\FontAwesome.otf" />
+    <None Remove="Resources\MaterialIcons-Regular.ttf" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\FontAwesome.otf" />
+    <EmbeddedResource Include="Resources\MaterialIcons-Regular.ttf" />
   </ItemGroup>
 
   <ItemGroup>

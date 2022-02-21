@@ -121,6 +121,21 @@
     <value>Нет данных</value>
   </data>
   <data name="ItemTotalLabel" xml:space="preserve">
-    <value>Всего: </value>
+    <value>Заболело </value>
+  </data>
+  <data name="People_Few" xml:space="preserve">
+    <value> человек</value>
+  </data>
+  <data name="People_Many" xml:space="preserve">
+    <value> человек</value>
+  </data>
+  <data name="People_One" xml:space="preserve">
+    <value> человек</value>
+  </data>
+  <data name="People_Two" xml:space="preserve">
+    <value> человека</value>
+  </data>
+  <data name="People_Zero" xml:space="preserve">
+    <value>нет</value>
   </data>
 </root>

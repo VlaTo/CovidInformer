@@ -77,5 +77,50 @@ namespace CovidInformer.Resources {
                 return ResourceManager.GetString("ItemTotalLabel", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на people.
+        /// </summary>
+        internal static string People_Few {
+            get {
+                return ResourceManager.GetString("People_Few", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на people.
+        /// </summary>
+        internal static string People_Many {
+            get {
+                return ResourceManager.GetString("People_Many", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на people.
+        /// </summary>
+        internal static string People_One {
+            get {
+                return ResourceManager.GetString("People_One", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на people.
+        /// </summary>
+        internal static string People_Two {
+            get {
+                return ResourceManager.GetString("People_Two", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на none.
+        /// </summary>
+        internal static string People_Zero {
+            get {
+                return ResourceManager.GetString("People_Zero", resourceCulture);
+            }
+        }
     }
 }

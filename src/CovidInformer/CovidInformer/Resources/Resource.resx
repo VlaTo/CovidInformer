@@ -123,4 +123,19 @@
   <data name="ItemTotalLabel" xml:space="preserve">
     <value>Total: </value>
   </data>
+  <data name="People_Few" xml:space="preserve">
+    <value>people</value>
+  </data>
+  <data name="People_Many" xml:space="preserve">
+    <value>people</value>
+  </data>
+  <data name="People_One" xml:space="preserve">
+    <value>people</value>
+  </data>
+  <data name="People_Two" xml:space="preserve">
+    <value>people</value>
+  </data>
+  <data name="People_Zero" xml:space="preserve">
+    <value>none</value>
+  </data>
 </root>

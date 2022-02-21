@@ -1,34 +1,36 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using CovidInformer.Core;
 using CovidInformer.Core.Db;
-using CovidInformer.Core.Db.Models;
 using CovidInformer.Core.Db.Providers;
 using CovidInformer.Core.Db.Repositories;
-using CovidInformer.Core.OpenApi.Providers;
 using CovidInformer.Entities;
 
 namespace CovidInformer.Services
 {
-    public sealed class DataService : IDataService
+    internal sealed class DatabaseDataService : IDataService
     {
         private readonly DatabaseContext context;
-        private readonly OpenApiDataProvider provider;
-        private readonly CachedValue<Covid19Data> cache;
+        private readonly IDataService dataService;
 
-        public DataService()
+        public DatabaseDataService(DatabaseContext context, IDataService dataService)
         {
-            context = new DatabaseContext();
-            provider = new OpenApiDataProvider();
-            cache = new CachedValue<Covid19Data>();
+            this.context = context;
+            this.dataService = dataService;
         }
 
         public async Task<Covid19Data> GetDataAsync(CancellationToken cancellationToken = default)
         {
-            if (false == cache.TryGetValue(out var data))
+            Covid19Data data;
+
+            using (var db = new GetDataProvider(context))
             {
-                data = await GetDataFromDatabaseAsync();
+                data = await db.GetDataAsync(CancellationToken.None);
+            }
+
+            if (null == data)
+            {
+                data = await dataService.GetDataAsync(cancellationToken);
             }
 
             return data;
@@ -36,7 +38,7 @@ namespace CovidInformer.Services
 
         public async Task UpdateDataAsync(CancellationToken cancellationToken)
         {
-            var data = await provider.DownloadDataAsync(cancellationToken);
+            var data = await dataService.GetDataAsync(cancellationToken);
 
             if (null == data)
             {
@@ -90,21 +92,6 @@ namespace CovidInformer.Services
             counterRepository.Dispose();
             countryRepository.Dispose();
             updateRepository.Dispose();
-        }
-
-        private async Task<Covid19Data> GetDataFromDatabaseAsync()
-        {
-            Covid19Data data;
-
-
-            using (var db = new GetDataProvider(context))
-            {
-                data = await db.GetDataAsync(CancellationToken.None);
-            }
-
-            cache.Set(data);
-
-            return data;
         }
     }
 }

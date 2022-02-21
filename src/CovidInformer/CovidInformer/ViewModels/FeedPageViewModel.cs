@@ -1,4 +1,5 @@
 ﻿using CovidInformer.Core;
+using CovidInformer.Entities;
 using CovidInformer.Models;
 using CovidInformer.Services;
 using System;
@@ -6,12 +7,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using CovidInformer.Entities;
 using Xamarin.Forms;
 
 namespace CovidInformer.ViewModels
@@ -47,6 +46,11 @@ namespace CovidInformer.ViewModels
             get;
         }
 
+        public ICommand Load
+        {
+            get;
+        }
+
         public ICommand Search
         {
             get;
@@ -64,38 +68,8 @@ namespace CovidInformer.ViewModels
 
             Items = new ObservableCollection<Item>();
             Refresh = new Command(PerformRefresh);
+            Load = new Command(PerformLoad);
             Search = new Command<string>(PerformSearch);
-            
-            IsBusy = true;
-
-            taskQueue.EnqueueTask(ExecuteLoadItemsCommand);
-        }
-
-        private async Task ExecuteLoadItemsCommand()
-        {
-            try
-            {
-                var data = await dataService.GetDataAsync(CancellationToken.None);
-
-                if (null != data)
-                {
-                    Device.BeginInvokeOnMainThread(() =>
-                    {
-                        Updated = data.Updated;
-                        Total = data.Total;
-
-                        AssignItems(data.Countries);
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
         }
 
         private async Task ExecuteRefreshItemsCommand()
@@ -178,6 +152,57 @@ namespace CovidInformer.ViewModels
             }
         }
 
+        private void PerformRefresh()
+        {
+            if (IsBusy)
+            {
+                return;
+            }
+
+            IsBusy = true;
+            
+            taskQueue.EnqueueTask(ExecuteRefreshItemsCommand);
+        }
+
+        private void PerformSearch(string pattern)
+        {
+            filter = pattern;
+            PerformFiltering();
+        }
+
+        private void PerformLoad()
+        {
+            IsBusy = true;
+            taskQueue.EnqueueTask(ExecuteLoadItemsCommand);
+        }
+
+        private async Task ExecuteLoadItemsCommand()
+        {
+            try
+            {
+                var data = await dataService.GetDataAsync(CancellationToken.None);
+
+                if (null != data)
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        Updated = data.Updated;
+                        Total = data.Total;
+
+                        AssignItems(data.Countries);
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
         private int FindIndex(string str)
         {
             var comparer = CultureInfo.CurrentUICulture.CompareInfo;
@@ -193,19 +218,6 @@ namespace CovidInformer.ViewModels
             }
 
             return Items.Count;
-        }
-
-        private void PerformRefresh()
-        {
-            IsBusy = true;
-
-            taskQueue.EnqueueTask(ExecuteRefreshItemsCommand);
-        }
-
-        private void PerformSearch(string pattern)
-        {
-            filter = pattern;
-            PerformFiltering();
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Numerics;
-
-namespace CovidInformer.Models
+﻿namespace CovidInformer.Models
 {
     public class Item
     {
@@ -23,7 +20,7 @@ namespace CovidInformer.Models
             set;
         }
 
-        public BigInteger Total
+        public ulong Total
         {
             get; 
             set;
