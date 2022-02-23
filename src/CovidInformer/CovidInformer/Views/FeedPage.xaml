@@ -8,7 +8,6 @@
     x:Class="CovidInformer.Views.FeedPage"
     x:DataType="local:FeedPageViewModel"
     BindingContext="{Binding Path=FeedPageViewModel, Source={StaticResource Key=ViewModelLocator}}"
-    Title="{Binding Title}"
     BackgroundColor="#7A7978">
 
     <ContentPage.ToolbarItems>
@@ -142,7 +141,7 @@
                                     <StackLayout.GestureRecognizers>
                                         <TapGestureRecognizer 
                                             NumberOfTapsRequired="1"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type local:FeedPageViewModel}}, Path=ItemTapped}"		
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type local:FeedPageViewModel}}, Path=OpenCountry, Mode=OneTime}"		
                                             CommandParameter="{Binding .}"
                                         />
                                     </StackLayout.GestureRecognizers>
@@ -171,7 +170,7 @@
                 VerticalOptions="Center"
                 Padding="16"
                 WidthRequest="360"
-                HeightRequest="120">
+                HeightRequest="480">
                 <StackLayout.GestureRecognizers>
                     <TapGestureRecognizer
                         Tapped="TapGestureRecognizer_OnTapped2"
@@ -179,19 +178,36 @@
                 </StackLayout.GestureRecognizers>
                 <Label
                     TextColor="Black"
-                    Text="Select date"
+                    Text="{x:Static resources:Resource.SelectDateDialogLabel}"
                 />
-                <CollectionView>
+                <CollectionView
+                    ItemsSource="{Binding Path=UpdateDates, Mode=OneWay}"
+                    SelectionMode="Single"
+                    SelectedItem="{Binding Path=SelectedDateModel, Mode=TwoWay}">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout 
                             Orientation="Vertical"
                         />
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate
+                            x:DataType="local:DateViewModel">
+                            <Label
+                                TextColor="Black"
+                                FontSize="Body"
+                                Text="{Binding Path=DateTime, Mode=OneTime, StringFormat='{0:d}'}"
+                                Padding="8,4"
+                            />
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+                <Button
+                    TextColor="White"
+                    BackgroundColor="DimGray"
+                    Command="{Binding Path=SelectDate, Mode=OneTime}"
+                    Text="{x:Static resources:Resource.SelectDateDialogOKButton}"
+                    Clicked="TapGestureRecognizer_OnTapped1"
+                />
             </StackLayout>
         </ContentView>
     </AbsoluteLayout>

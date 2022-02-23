@@ -18,16 +18,23 @@ namespace CovidInformer.ViewModels
     {
         private readonly IDataService dataService;
         private readonly TaskExecutor executor;
+        private bool isBusy;
         private IReadOnlyList<CountryInfo> items;
         private string filter;
-        private DateTime oldestDate;
         private DateTime updateDate;
         private ulong total;
+        private DateViewModel selectedDateModelModel;
 
-        public DateTime OldestDate
+        public DateViewModel SelectedDateModel
         {
-            get => oldestDate;
-            set => SetProperty(ref oldestDate, value);
+            get => selectedDateModelModel;
+            set
+            {
+                if (SetProperty(ref selectedDateModelModel, value))
+                {
+                    Debug.WriteLine($"[SelectedDate] date: {selectedDateModelModel.DateTime:d}");
+                }
+            } 
         }
 
         public DateTime UpdateDate
@@ -36,19 +43,24 @@ namespace CovidInformer.ViewModels
             set => SetProperty(ref updateDate, value);
         }
 
+        public bool IsBusy
+        {
+            get => isBusy;
+            set => SetProperty(ref isBusy, value);
+        }
+
         public ulong Total
         {
             get => total;
             set => SetProperty(ref total, value);
         }
 
-        public bool IsInitializing
+        public ObservableCollection<Item> Items
         {
             get;
-            private set;
         }
-
-        public ObservableCollection<Item> Items
+        
+        public ObservableCollection<DateViewModel> UpdateDates
         {
             get;
         }
@@ -68,6 +80,11 @@ namespace CovidInformer.ViewModels
             get;
         }
 
+        public ICommand OpenCountry
+        {
+            get;
+        }
+
         public FeedPageViewModel(IDataService dataService, TaskExecutor executor)
         {
             this.dataService = dataService;
@@ -77,9 +94,11 @@ namespace CovidInformer.ViewModels
             // Title = "Browse";
 
             Items = new ObservableCollection<Item>();
+            UpdateDates = new ObservableCollection<DateViewModel>();
             Refresh = new Command<string>(PerformRefresh);
             Search = new Command<string>(PerformSearch);
             SelectDate = new Command(DoSelectDate);
+            OpenCountry = new Command<Item>(PerformOpenCountry);
         }
 
         private async Task ExecuteRefreshItems(string arg)
@@ -101,13 +120,29 @@ namespace CovidInformer.ViewModels
                 {
                     Device.BeginInvokeOnMainThread(() =>
                     {
+                        UpdateDates.Clear();
+
+                        UpdateDates.Add(new DateViewModel
+                        {
+                            DateTime = new DateTime(2022, 2, 21)
+                        });
+                        UpdateDates.Add(new DateViewModel
+                        {
+                            DateTime = new DateTime(2022, 2, 22)
+                        });
+                        var dateViewModel = new DateViewModel
+                        {
+                            DateTime = new DateTime(2022, 2, 23)
+                        };
+                        UpdateDates.Add(dateViewModel);
+                        SelectedDateModel = dateViewModel;
+
                         //OldestDate = data.OldestDate;
                         UpdateDate = data.UpdateDate;
                         Total = data.LatestTotal;
 
                         AssignItems(data.Countries);
 
-                        IsInitializing = false;
                         IsBusy = false;
                     });
                 }
@@ -183,9 +218,18 @@ namespace CovidInformer.ViewModels
             PerformFiltering();
         }
 
+        private void PerformOpenCountry(Item item)
+        {
+            Debug.WriteLine("[PerformOpenCountry] ");
+        }
+
         private void DoSelectDate()
         {
-            Debug.WriteLine("[DoSelectDate]");
+            if (updateDate != selectedDateModelModel.DateTime)
+            {
+                updateDate = selectedDateModelModel.DateTime;
+                Debug.WriteLine($"[DoSelectDate] date: {updateDate:d}");
+            }
         }
 
         /*private void PerformLoad()

@@ -131,5 +131,23 @@ namespace CovidInformer.Resources {
                 return ResourceManager.GetString("People_Zero", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select date.
+        /// </summary>
+        internal static string SelectDateDialogLabel {
+            get {
+                return ResourceManager.GetString("SelectDateDialogLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на OK.
+        /// </summary>
+        internal static string SelectDateDialogOKButton {
+            get {
+                return ResourceManager.GetString("SelectDateDialogOKButton", resourceCulture);
+            }
+        }
     }
 }

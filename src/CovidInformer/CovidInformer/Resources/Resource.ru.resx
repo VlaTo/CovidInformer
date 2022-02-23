@@ -141,4 +141,10 @@
   <data name="People_Zero" xml:space="preserve">
     <value>нет</value>
   </data>
+  <data name="SelectDateDialogLabel" xml:space="preserve">
+    <value>Выберите дату</value>
+  </data>
+  <data name="SelectDateDialogOKButton" xml:space="preserve">
+    <value>Подтвердить</value>
+  </data>
 </root>
