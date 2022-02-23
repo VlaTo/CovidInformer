@@ -18,10 +18,10 @@ namespace CovidInformer.Services
                 var openApiService = new OpenApiDataService(openApiProvider);
                 var databaseService = new DatabaseDataService(databaseContext, openApiService);
                 var cachedService = new CachedDataService(databaseService);
+
+                var taskExecutor = new TaskExecutor();
                 
-                var taskQueue = DependencyService.Resolve<TaskQueue>();
-                
-                return new FeedPageViewModel(cachedService, taskQueue);
+                return new FeedPageViewModel(cachedService, taskExecutor);
             }
         } 
     }

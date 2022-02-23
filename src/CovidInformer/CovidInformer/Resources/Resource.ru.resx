@@ -123,6 +123,9 @@
   <data name="ItemTotalLabel" xml:space="preserve">
     <value>Заболело </value>
   </data>
+  <data name="LatestUpdateLabel" xml:space="preserve">
+    <value>Последнее обновление: </value>
+  </data>
   <data name="People_Few" xml:space="preserve">
     <value> человек</value>
   </data>

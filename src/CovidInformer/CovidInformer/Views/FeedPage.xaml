@@ -9,11 +9,12 @@
     x:DataType="local:FeedPageViewModel"
     BindingContext="{Binding Path=FeedPageViewModel, Source={StaticResource Key=ViewModelLocator}}"
     Title="{Binding Title}"
-    BackgroundColor="Gray">
+    BackgroundColor="#7A7978">
 
     <ContentPage.ToolbarItems>
         <ToolbarItem
-            Command="{Binding Refresh}">
+            Command="{Binding Refresh}"
+            CommandParameter="update">
             <ToolbarItem.IconImageSource>
                 <FontImageSource
                     FontFamily="MaterialIcons"
@@ -28,90 +29,170 @@
       x:DataType enables compiled bindings for better performance and compile time validation of binding expressions.
       https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/data-binding/compiled-bindings
     -->
-    <RefreshView
-        RefreshColor="Black"
-        Command="{Binding Refresh}"
-        IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
-        <StackLayout
-            Orientation="Vertical">
-            
-            <SearchBar
-                SearchCommand="{Binding Path=Search}"
-                SearchCommandParameter="{Binding Source={x:RelativeSource Self}, Path=Text}"
-            />
-            
-            <DatePicker
-                FontSize="Body"
-                Format="d"
-                Date="{Binding Path=Updated, Mode=TwoWay}"
-            />
 
-            <CollectionView
-                x:Name="ItemsListView"
-                ItemsSource="{Binding Items}"
-                SelectionMode="None"
-                ItemSizingStrategy="MeasureFirstItem">
-                
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout
-                        Orientation="Vertical"
-                        ItemSpacing="4"
-                    />
-                </CollectionView.ItemsLayout>
-                
-                <CollectionView.EmptyView>
+    <AbsoluteLayout>
+        <RefreshView
+            RefreshColor="Black"
+            Command="{Binding Refresh}"
+            CommandParameter="load"
+            IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+            <StackLayout
+                Orientation="Vertical">
+
+                <SearchBar
+                    SearchCommand="{Binding Path=Search, Mode=OneTime}"
+                    SearchCommandParameter="{Binding Source={x:RelativeSource Self}, Path=Text}"
+                />
+
+                <StackLayout
+                    Orientation="Horizontal"
+                    Margin="16,0">
+
+                    <Image
+                        WidthRequest="24"
+                        HeightRequest="24">
+                        <Image.Source>
+                            <FontImageSource
+                                Size="12"
+                                FontFamily="MaterialIcons"
+                                Color="White"
+                                Glyph="&#xE616;"
+                            />
+                        </Image.Source>
+                    </Image>
+
                     <Label
-                        Text="{x:Static resources:Resource.EmptyContentLabel}"
-                    />
-                </CollectionView.EmptyView>
-                
-                <CollectionView.ItemTemplate>
-                    <DataTemplate
-                        x:DataType="model:Item">
-                        <Frame
-                            BackgroundColor="Transparent"
-                            BorderColor="White"
-                            CornerRadius="8"
-                            HorizontalOptions="FillAndExpand"
-                            VerticalOptions="FillAndExpand"
-                            HasShadow="True">
-                            <StackLayout
-                                Padding="10">
-                                <Label
-                                    Text="{Binding Text}" 
-                                    LineBreakMode="NoWrap" 
-                                    Style="{DynamicResource ListItemTextStyle}" 
-                                    FontSize="16"
-                                />
-                                <Label
-                                    Text="{Binding Description}" 
-                                    LineBreakMode="NoWrap"
-                                    Style="{DynamicResource ListItemDetailTextStyle}"
-                                    FontSize="13"
-                                />
-                                <Label>
-                                    <Label.FormattedText>
-                                        <FormattedString>
-                                            <FormattedString.Spans>
-                                                <Span Text="{x:Static resources:Resource.ItemTotalLabel}" />
-                                                <Span FontAttributes="Bold" Text="{Binding Path=Total, StringFormat='{0:N0}'}" />
-                                                <Span Text="{Binding Path=Total, Converter={x:StaticResource PluralConverter}, ConverterParameter='People'}" />
-                                            </FormattedString.Spans>
-                                        </FormattedString>
-                                    </Label.FormattedText>
-                                </Label>
-                                <StackLayout.GestureRecognizers>
-                                    <TapGestureRecognizer 
-                                        NumberOfTapsRequired="1"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:FeedPageViewModel}}, Path=ItemTapped}"		
-                                        CommandParameter="{Binding .}"
+                        FontSize="Body">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="{x:Static resources:Resource.LatestUpdateLabel}" />
+                                <Span
+                                    Text="{Binding Path=UpdateDate, StringFormat='{0:d}', Mode=OneWay}"
+                                    TextColor="Blue"
+                                    TextDecorations="Underline">
+                                    <Span.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Tapped="TapGestureRecognizer_OnTapped"
+                                            Command="{Binding Path=SelectDate, Mode=OneTime}"
+                                        />
+                                    </Span.GestureRecognizers>
+                                </Span>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+
+                </StackLayout>
+
+                <CollectionView
+                    x:Name="ItemsListView"
+                    ItemsSource="{Binding Items}"
+                    SelectionMode="None"
+                    ItemSizingStrategy="MeasureFirstItem"
+                    ItemsUpdatingScrollMode="KeepItemsInView"
+                    Margin="8,0">
+
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout
+                            Orientation="Vertical"
+                            ItemSpacing="4"
+                        />
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.EmptyView>
+                        <Label
+                            Text="{x:Static resources:Resource.EmptyContentLabel}"
+                        />
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate
+                            x:DataType="model:Item">
+                            <Frame
+                                BackgroundColor="#4F4037"
+                                BorderColor="White"
+                                CornerRadius="8"
+                                HorizontalOptions="FillAndExpand"
+                                VerticalOptions="FillAndExpand"
+                                HasShadow="True">
+                                <StackLayout
+                                    Padding="10">
+                                    <Label
+                                        Text="{Binding Text}" 
+                                        LineBreakMode="NoWrap" 
+                                        Style="{DynamicResource ListItemTextStyle}" 
+                                        FontSize="16"
                                     />
-                                </StackLayout.GestureRecognizers>
-                            </StackLayout>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </StackLayout>
-    </RefreshView>
+                                    <Label
+                                        Text="{Binding Description}" 
+                                        LineBreakMode="NoWrap"
+                                        Style="{DynamicResource ListItemDetailTextStyle}"
+                                        FontSize="13"
+                                    />
+                                    <Label>
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <FormattedString.Spans>
+                                                    <Span Text="{x:Static resources:Resource.ItemTotalLabel}" />
+                                                    <Span FontAttributes="Bold" Text="{Binding Path=Total, StringFormat='{0:N0}'}" />
+                                                    <Span Text="{Binding Path=Total, Converter={x:StaticResource PluralConverter}, ConverterParameter='People'}" />
+                                                </FormattedString.Spans>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <StackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer 
+                                            NumberOfTapsRequired="1"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type local:FeedPageViewModel}}, Path=ItemTapped}"		
+                                            CommandParameter="{Binding .}"
+                                        />
+                                    </StackLayout.GestureRecognizers>
+                                </StackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+        </RefreshView>
+        <ContentView
+            x:Name="DatePickerDialog"
+            AbsoluteLayout.LayoutFlags="All"
+            AbsoluteLayout.LayoutBounds="0,0,1,1"
+            BackgroundColor="#C0808080"
+            IsVisible="False">
+            <ContentView.GestureRecognizers>
+                <TapGestureRecognizer
+                    Tapped="TapGestureRecognizer_OnTapped1"
+                />
+            </ContentView.GestureRecognizers>
+            <StackLayout
+                BackgroundColor="White"
+                Orientation="Vertical"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                Padding="16"
+                WidthRequest="360"
+                HeightRequest="120">
+                <StackLayout.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Tapped="TapGestureRecognizer_OnTapped2"
+                    />
+                </StackLayout.GestureRecognizers>
+                <Label
+                    TextColor="Black"
+                    Text="Select date"
+                />
+                <CollectionView>
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout 
+                            Orientation="Vertical"
+                        />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+        </ContentView>
+    </AbsoluteLayout>
 </ContentPage>

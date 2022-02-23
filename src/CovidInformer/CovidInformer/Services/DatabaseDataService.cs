@@ -1,10 +1,11 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using CovidInformer.Core.Db;
+﻿using CovidInformer.Core.Db;
 using CovidInformer.Core.Db.Providers;
 using CovidInformer.Core.Db.Repositories;
 using CovidInformer.Entities;
+using System;
+using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CovidInformer.Services
 {
@@ -19,9 +20,9 @@ namespace CovidInformer.Services
             this.dataService = dataService;
         }
 
-        public async Task<Covid19Data> GetDataAsync(CancellationToken cancellationToken = default)
+        public async Task<CovidData> GetDataAsync(CancellationToken cancellationToken = default)
         {
-            Covid19Data data;
+            CovidData data;
 
             using (var db = new GetDataProvider(context))
             {
@@ -48,7 +49,7 @@ namespace CovidInformer.Services
             var updateRepository = new UpdateRepository(context);
             var countryRepository = new CountryRepository(context);
             var counterRepository = new CounterRepository(context);
-            var date = data.Updated.Date;
+            var date = data.UpdateDate.Date;
 
             try
             {
@@ -61,13 +62,17 @@ namespace CovidInformer.Services
 
                 for (var index = 0; index < data.Countries.Count; index++)
                 {
-                    //var countryName = data.Countries[index].Region.EnglishName;
-                    var region = data.Countries[index].Region;
-                    var country = await countryRepository.FindAsync(region.EnglishName, cancellationToken);
+                    var ci = data.Countries[index];
+                    var country = await countryRepository.FindAsync(ci.CountryName, cancellationToken);
 
                     if (null == country)
                     {
-                        country = await countryRepository.AddAsync(region.EnglishName, region.NativeName, region.TwoLetterISORegionName, cancellationToken);
+                        if (false == TryGetRegion(ci.CountryCode, out var nativeName))
+                        {
+                            nativeName = ci.CountryName;
+                        }
+
+                        country = await countryRepository.AddAsync(ci.CountryName, nativeName, ci.CountryCode, cancellationToken);
                     }
 
                     var counter = await counterRepository.FindAsync(country, update, cancellationToken);
@@ -92,6 +97,23 @@ namespace CovidInformer.Services
             counterRepository.Dispose();
             countryRepository.Dispose();
             updateRepository.Dispose();
+        }
+
+        private static bool TryGetRegion(string regionName, out string nativeName)
+        {
+            try
+            {
+                var regionInfo = new RegionInfo(regionName);
+
+                nativeName = regionInfo.NativeName;
+
+                return true;
+            }
+            catch (ArgumentException)
+            {
+                nativeName = null;
+                return false;
+            }
         }
     }
 }

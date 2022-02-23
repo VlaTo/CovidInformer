@@ -79,6 +79,15 @@ namespace CovidInformer.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Last Update: .
+        /// </summary>
+        internal static string LatestUpdateLabel {
+            get {
+                return ResourceManager.GetString("LatestUpdateLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на people.
         /// </summary>
         internal static string People_Few {

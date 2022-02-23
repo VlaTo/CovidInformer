@@ -4,7 +4,6 @@ using CovidInformer.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,7 +20,7 @@ namespace CovidInformer.Core.Db.Providers
             this.context = context;
         }
 
-        public async Task<Covid19Data> GetDataAsync(CancellationToken cancellationToken = default)
+        public async Task<CovidData> GetDataAsync(CancellationToken cancellationToken = default)
         {
             var latests = await context.Updates
                 .Include(entity => entity.Counters)
@@ -39,19 +38,35 @@ namespace CovidInformer.Core.Db.Providers
             
             foreach (var counter in latests.Counters)
             {
-                var region = new RegionInfo(counter.Country.TwoLetterISORegionName);
-                countries.Add(new CountryInfo(region, counter.Value));
+                var countryInfo = new CountryInfo(
+                    counter.Country.TwoLetterISORegionName,
+                    counter.Country.DisplayName,
+                    counter.Country.NativeName,
+                    counter.Value
+                );
+
+                countries.Add(countryInfo);
                 // counter.Country
                 // counter.Value
                 // latests.Updated
             }
 
-            var builder = new Covid19DataBuilder()
-                .SetLatest(0UL)
-                .SetUpdated(latests.Updated)
-                .SetCountries(countries);
+            var oldestDate = await GetOldestDate(cancellationToken);
+            var builder = new CovidDataBuilder()
+                .SetLatestTotal(0UL)
+                .SetCountries(countries)
+                .SetUpdateDate(latests.Updated)
+                //.SetOldestDate(oldestDate)
+                //.SetLatestDate(latests.Updated)
+                ;
 
             return builder.Build();
+        }
+
+        private async Task<DateTime> GetOldestDate(CancellationToken cancellationToken = default)
+        {
+            var update = await context.Updates.OrderByDescending(entity => entity.Updated).FirstOrDefaultAsync(cancellationToken);
+            return update?.Updated ?? DateTime.UtcNow;
         }
 
         public void Dispose()

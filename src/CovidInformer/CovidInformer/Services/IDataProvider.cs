@@ -6,6 +6,6 @@ namespace CovidInformer.Services
 {
     public interface IDataProvider
     {
-        Task<Covid19Data> GetDataAsync(CancellationToken cancellationToken = default);
+        Task<CovidData> GetDataAsync(CancellationToken cancellationToken = default);
     }
 }

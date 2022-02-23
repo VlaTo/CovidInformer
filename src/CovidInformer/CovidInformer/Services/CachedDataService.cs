@@ -7,7 +7,7 @@ namespace CovidInformer.Services
     internal sealed class CachedDataService : IDataService
     {
         private readonly IDataService dataService;
-        private Covid19Data data;
+        private CovidData data;
 
         public CachedDataService(IDataService dataService)
         {
@@ -15,7 +15,7 @@ namespace CovidInformer.Services
             data = null;
         }
 
-        public async Task<Covid19Data> GetDataAsync(CancellationToken cancellationToken = default)
+        public async Task<CovidData> GetDataAsync(CancellationToken cancellationToken = default)
         {
             if (null == data)
             {

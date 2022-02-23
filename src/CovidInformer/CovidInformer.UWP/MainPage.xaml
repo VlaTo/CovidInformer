@@ -6,7 +6,8 @@
     xmlns:local="using:CovidInformer.UWP"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+    <Grid
+        Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     </Grid>
+
 </forms:WindowsPage>

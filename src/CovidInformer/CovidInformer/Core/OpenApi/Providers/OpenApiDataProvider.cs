@@ -1,7 +1,8 @@
 ﻿using CovidInformer.Core.OpenApi.Entities;
 using CovidInformer.Entities;
-using LibraProgramming.Data.OpenApi.Core;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -19,7 +20,7 @@ namespace CovidInformer.Core.OpenApi.Providers
             httpClient = new HttpClient();
         }
 
-        public async Task<Covid19Data> DownloadDataAsync(CancellationToken cancellationToken = default)
+        public async Task<CovidData> DownloadDataAsync(CancellationToken cancellationToken = default)
         {
             try
             {
@@ -49,9 +50,7 @@ namespace CovidInformer.Core.OpenApi.Providers
                                 return null;
                             }
 
-                            var builder = Covid19DataBuilder.From(locationsInfo);
-
-                            return builder.Build();
+                            return Map(locationsInfo);
                         }
                     }
                 }
@@ -60,6 +59,87 @@ namespace CovidInformer.Core.OpenApi.Providers
             {
                 Console.WriteLine(e);
                 return null;
+            }
+        }
+
+        public CovidData Map(ConfirmedCasesInfo confirmedCasesInfo)
+        {
+            // locationsInfo.Latest
+            // locationsInfo.Source
+            // locationsInfo.Updated
+
+            var formatProvider = CultureInfo.InvariantCulture;
+            var countries = new Dictionary<string, CountryInfo>();
+
+            foreach (var countryInfo in confirmedCasesInfo.Locations)
+            {
+                var countryCode = countryInfo.CountryCode;
+                var countryName = countryInfo.Country;
+
+                try
+                {
+                    // countryInfo.Country
+                    // countryInfo.CountryCode
+                    // countryInfo.Province
+                    // countryInfo.Coordinates
+                    // countryInfo.Latest
+
+                    if (false == countries.TryGetValue(countryCode, out var ci))
+                    {
+                        if (false == TryGetNativeName(countryCode, out var nativeName))
+                        {
+                            nativeName = null;
+                        }
+
+                        countries.Add(countryCode, new CountryInfo(countryCode, countryName, nativeName, countryInfo.Latest));
+                    }
+                    else
+                    {
+                        countries[countryCode] = new CountryInfo(countryCode, countryName, ci.NativeName, ci.Total + countryInfo.Latest);
+                    }
+
+                    foreach (var kvp in countryInfo.History.Data)
+                    {
+                        if (false == DateTime.TryParse(kvp.Key, formatProvider, DateTimeStyles.AdjustToUniversal, out var date))
+                        {
+                            ;
+                        }
+
+                        // kvp.Key - Date
+                        // kvp.Value.ValueKind == JsonValueKind.Number
+                        // (ulong)kvp.Value.GetInt64()
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                }
+            }
+
+            return new CovidDataBuilder()
+                .SetCountries(countries.Values)
+                .SetSource(confirmedCasesInfo.Source)
+                .SetLatestTotal(confirmedCasesInfo.Latest)
+                .SetUpdateDate(confirmedCasesInfo.Updated)
+                .SetOldestDate(confirmedCasesInfo.Updated)
+                .SetLatestDate(confirmedCasesInfo.Updated)
+                .Build();
+        }
+
+        private static bool TryGetNativeName(string regionName, out string nativeName)
+        {
+            try
+            {
+                var regionInfo = new RegionInfo(regionName);
+
+                nativeName = regionInfo.NativeName;
+
+                return true;
+            }
+            catch (ArgumentException)
+            {
+                nativeName = null;
+                return false;
             }
         }
     }

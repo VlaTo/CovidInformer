@@ -15,7 +15,7 @@ namespace CovidInformer.Services
             this.provider = provider;
         }
 
-        public Task<Covid19Data> GetDataAsync(CancellationToken cancellationToken = default)
+        public Task<CovidData> GetDataAsync(CancellationToken cancellationToken = default)
         {
             return provider.DownloadDataAsync(cancellationToken);
         }

@@ -1,4 +1,6 @@
-﻿using CovidInformer.ViewModels;
+﻿using System;
+using System.Diagnostics;
+using CovidInformer.ViewModels;
 
 namespace CovidInformer.Views
 {
@@ -13,9 +15,24 @@ namespace CovidInformer.Views
         {
             base.OnAppearing();
 
-            var command = ((FeedPageViewModel)BindingContext).Load;
+            var command = ((FeedPageViewModel)BindingContext).Refresh;
 
-            command.Execute(null);
+            command.Execute("load");
+        }
+
+        private void TapGestureRecognizer_OnTapped1(object sender, EventArgs e)
+        {
+            DatePickerDialog.IsVisible = false;
+        }
+
+        private void TapGestureRecognizer_OnTapped2(object sender, EventArgs e)
+        {
+            ;
+        }
+
+        private void TapGestureRecognizer_OnTapped(object sender, EventArgs e)
+        {
+            DatePickerDialog.IsVisible = true;
         }
     }
 }

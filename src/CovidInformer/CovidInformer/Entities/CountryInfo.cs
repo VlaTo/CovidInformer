@@ -1,10 +1,18 @@
-﻿using System.Globalization;
-
-namespace CovidInformer.Entities
+﻿namespace CovidInformer.Entities
 {
     public readonly struct CountryInfo
     {
-        public RegionInfo Region
+        public string CountryCode
+        {
+            get;
+        }
+
+        public string CountryName
+        {
+            get;
+        }
+
+        public string NativeName
         {
             get;
         }
@@ -14,9 +22,11 @@ namespace CovidInformer.Entities
             get;
         }
 
-        public CountryInfo(RegionInfo region, ulong total)
+        public CountryInfo(string countryCode, string countryName, string nativeName, ulong total)
         {
-            Region = region;
+            CountryCode = countryCode;
+            CountryName = countryName;
+            NativeName = nativeName;
             Total = total;
         }
     }
