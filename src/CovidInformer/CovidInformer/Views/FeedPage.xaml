@@ -71,7 +71,7 @@
                                     TextDecorations="Underline">
                                     <Span.GestureRecognizers>
                                         <TapGestureRecognizer
-                                            Tapped="TapGestureRecognizer_OnTapped"
+                                            Tapped="DoSelectDateDialogOpen"
                                             Command="{Binding Path=SelectDate, Mode=OneTime}"
                                         />
                                     </Span.GestureRecognizers>
@@ -160,7 +160,7 @@
             IsVisible="False">
             <ContentView.GestureRecognizers>
                 <TapGestureRecognizer
-                    Tapped="TapGestureRecognizer_OnTapped1"
+                    Tapped="DoSelectDateDialogDismiss"
                 />
             </ContentView.GestureRecognizers>
             <StackLayout
@@ -173,7 +173,7 @@
                 HeightRequest="480">
                 <StackLayout.GestureRecognizers>
                     <TapGestureRecognizer
-                        Tapped="TapGestureRecognizer_OnTapped2"
+                        Tapped="DoSelectDateDialogEmpty"
                     />
                 </StackLayout.GestureRecognizers>
                 <Label
@@ -205,8 +205,9 @@
                     TextColor="White"
                     BackgroundColor="DimGray"
                     Command="{Binding Path=SelectDate, Mode=OneTime}"
+                    CommandParameter="{Binding Path=SelectedDateModel}"
                     Text="{x:Static resources:Resource.SelectDateDialogOKButton}"
-                    Clicked="TapGestureRecognizer_OnTapped1"
+                    Clicked="DoSelectDateDialogApply"
                 />
             </StackLayout>
         </ContentView>

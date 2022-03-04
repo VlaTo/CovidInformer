@@ -1,9 +1,6 @@
-﻿using System;
-using CovidInformer.Core;
+﻿using CovidInformer.Core;
 using CovidInformer.Core.Db;
-using System.Threading;
 using CovidInformer.Core.OpenApi.Providers;
-using Microsoft.EntityFrameworkCore;
 using Xamarin.Forms;
 
 namespace CovidInformer

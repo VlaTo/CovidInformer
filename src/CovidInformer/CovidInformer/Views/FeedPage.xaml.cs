@@ -20,19 +20,30 @@ namespace CovidInformer.Views
             command.Execute("load");
         }
 
-        private void TapGestureRecognizer_OnTapped1(object sender, EventArgs e)
+        private void DoSelectDateDialogDismiss(object sender, EventArgs e)
         {
-            DatePickerDialog.IsVisible = false;
+            DialogDismiss();
         }
 
-        private void TapGestureRecognizer_OnTapped2(object sender, EventArgs e)
+        private void DoSelectDateDialogApply(object sender, EventArgs e)
+        {
+            ;
+            DialogDismiss();
+        }
+
+        private void DoSelectDateDialogEmpty(object sender, EventArgs e)
         {
             ;
         }
 
-        private void TapGestureRecognizer_OnTapped(object sender, EventArgs e)
+        private void DoSelectDateDialogOpen(object sender, EventArgs e)
         {
             DatePickerDialog.IsVisible = true;
+        }
+
+        private void DialogDismiss()
+        {
+            DatePickerDialog.IsVisible = false;
         }
     }
 }
