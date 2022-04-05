@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using CovidInformer.Core.OpenApi.Providers;
@@ -17,6 +18,7 @@ namespace CovidInformer.Services
 
         public Task<CovidData> GetDataAsync(CancellationToken cancellationToken = default)
         {
+            Debug.WriteLine($"Start fetching data from {nameof(OpenApiDataService)}...");
             return provider.DownloadDataAsync(cancellationToken);
         }
 

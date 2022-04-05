@@ -2,6 +2,7 @@
 using CovidInformer.Entities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -22,6 +23,8 @@ namespace CovidInformer.Core.OpenApi.Providers
 
         public async Task<CovidData> DownloadDataAsync(CancellationToken cancellationToken = default)
         {
+            Debug.WriteLine("Start fetching OpenAPI data...");
+
             try
             {
                 var uri = new Uri("https://coronavirus-tracker-api.herokuapp.com/confirmed");
@@ -35,18 +38,24 @@ namespace CovidInformer.Core.OpenApi.Providers
                 request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 request.Headers.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
                 request.Headers.Connection.Add("keep-alive");
+                
+                Debug.WriteLine($"Request endpoint: {uri}");
 
                 using (var response = await httpClient.SendAsync(request, cancellationToken))
                 {
+                    Debug.WriteLine($"Received response, status: {response.StatusCode}");
+
                     using (var message = response.EnsureSuccessStatusCode())
                     {
                         using (var stream = await message.Content.ReadAsStreamAsync())
                         {
+                            Debug.WriteLine($"Data length: {stream.Length}");
+
                             var locationsInfo = await JsonSerializer.DeserializeAsync<ConfirmedCasesInfo>(stream, cancellationToken: cancellationToken);
 
                             if (null == locationsInfo)
                             {
-
+                                Debug.WriteLine("Can't deserialize OpenAPI data");
                                 return null;
                             }
 
@@ -57,7 +66,7 @@ namespace CovidInformer.Core.OpenApi.Providers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return null;
             }
         }

@@ -23,16 +23,19 @@ namespace CovidInformer.ViewModels
         private string filter;
         private DateTime updateDate;
         private ulong total;
-        private DateViewModel selectedDateModelModel;
+        private DateViewModel selectedDateModel;
 
         public DateViewModel SelectedDateModel
         {
-            get => selectedDateModelModel;
+            get => selectedDateModel;
             set
             {
-                if (SetProperty(ref selectedDateModelModel, value))
+                if (SetProperty(ref selectedDateModel, value))
                 {
-                    Debug.WriteLine($"[SelectedDate] date: {selectedDateModelModel.DateTime:d}");
+                    if (null != selectedDateModel)
+                    {
+                        Debug.WriteLine($"[SelectedDate] date: {selectedDateModel.DateTime:d}");
+                    }
                 }
             } 
         }
@@ -172,7 +175,7 @@ namespace CovidInformer.ViewModels
         {
             bool NoFilter(string str) => true;
 
-            bool Filter(string str) => str.StartsWith(filter);
+            bool Filter(string str) => str.StartsWith(filter, true, CultureInfo.CurrentUICulture);
 
             Items.Clear();
 
@@ -225,9 +228,9 @@ namespace CovidInformer.ViewModels
 
         private void DoSelectDate()
         {
-            if (updateDate != selectedDateModelModel.DateTime)
+            if (updateDate != selectedDateModel.DateTime)
             {
-                updateDate = selectedDateModelModel.DateTime;
+                updateDate = selectedDateModel.DateTime;
                 Debug.WriteLine($"[DoSelectDate] date: {updateDate:d}");
             }
         }

@@ -3,6 +3,7 @@ using CovidInformer.Core.Db.Providers;
 using CovidInformer.Core.Db.Repositories;
 using CovidInformer.Entities;
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +24,9 @@ namespace CovidInformer.Services
         public async Task<CovidData> GetDataAsync(CancellationToken cancellationToken = default)
         {
             CovidData data;
-
+            
+            Debug.WriteLine($"Start fetching data from {nameof(DatabaseDataService)}...");
+            
             using (var db = new GetDataProvider(context))
             {
                 data = await db.GetDataAsync(CancellationToken.None);

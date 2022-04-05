@@ -1,4 +1,5 @@
-﻿using CovidInformer.Entities;
+﻿using System.Diagnostics;
+using CovidInformer.Entities;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +20,12 @@ namespace CovidInformer.Services
         {
             if (null == data)
             {
+                Debug.WriteLine("No cached data");
                 data = await dataService.GetDataAsync(cancellationToken);
+            }
+            else
+            {
+                Debug.WriteLine("Fetching data from cache");
             }
 
             return data;

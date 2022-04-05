@@ -4,6 +4,7 @@ using CovidInformer.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +23,8 @@ namespace CovidInformer.Core.Db.Providers
 
         public async Task<CovidData> GetDataAsync(CancellationToken cancellationToken = default)
         {
+            Debug.WriteLine($"Fetching data from DB...");
+
             var latests = await context.Updates
                 .Include(entity => entity.Counters)
                 .ThenInclude(entity => entity.Country)
@@ -31,6 +34,7 @@ namespace CovidInformer.Core.Db.Providers
 
             if (null == latests)
             {
+                Debug.WriteLine("No data in DB");
                 return null;
             }
 
@@ -59,6 +63,8 @@ namespace CovidInformer.Core.Db.Providers
                 //.SetOldestDate(oldestDate)
                 //.SetLatestDate(latests.Updated)
                 ;
+
+            Debug.WriteLine("Building data from DB");
 
             return builder.Build();
         }
