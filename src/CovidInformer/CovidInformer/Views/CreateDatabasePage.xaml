@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="CovidInformer.Views.CreateDatabasePage">
+    <ContentPage.Content>
+        <StackLayout>
+            <Button
+                VerticalOptions="CenterAndExpand"
+                HorizontalOptions="CenterAndExpand"
+                Clicked="OnButtonClicked"
+                Text="Create Database"
+            />
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

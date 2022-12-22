@@ -2,6 +2,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace CovidInformer.Core.Db
@@ -37,6 +38,8 @@ namespace CovidInformer.Core.Db
                 Cache = SqliteCacheMode.Private,
                 Mode = SqliteOpenMode.ReadWriteCreate
             };
+
+            Debug.WriteLine($"Database path: \"{connectionBuilder.DataSource}\"");
 
             optionsBuilder.UseSqlite(connectionBuilder.ToString());
         }

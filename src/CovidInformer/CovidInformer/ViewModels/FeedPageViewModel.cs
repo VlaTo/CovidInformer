@@ -149,6 +149,13 @@ namespace CovidInformer.ViewModels
                         IsBusy = false;
                     });
                 }
+                else
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        IsBusy = false;
+                    });
+                }
             }
             catch (Exception ex)
             {

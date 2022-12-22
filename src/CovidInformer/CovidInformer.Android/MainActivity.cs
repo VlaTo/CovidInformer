@@ -1,7 +1,11 @@
 ﻿using Android.App;
 using Android.Content.PM;
-using Android.Runtime;
 using Android.OS;
+using Android.Runtime;
+using CovidInformer.Droid.Services;
+using CovidInformer.Services;
+using Xamarin.Forms;
+using Platform = Xamarin.Essentials.Platform;
 
 namespace CovidInformer.Droid
 {
@@ -12,16 +16,17 @@ namespace CovidInformer.Droid
         {
             base.OnCreate(savedInstanceState);
 
-            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
-            Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            Platform.Init(this, savedInstanceState);
+            Forms.Init(this, savedInstanceState);
+            
+            DependencyService.RegisterSingleton<IDatabaseRewriter>(new DatabaseRewriter());
 
             LoadApplication(new App());
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
         {
-            Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-
+            Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }

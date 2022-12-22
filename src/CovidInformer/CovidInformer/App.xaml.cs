@@ -1,6 +1,10 @@
-﻿using CovidInformer.Core;
+﻿using System;
+using System.Threading.Tasks;
+using CovidInformer.Core;
 using CovidInformer.Core.Db;
 using CovidInformer.Core.OpenApi.Providers;
+using CovidInformer.Views;
+using Microsoft.EntityFrameworkCore;
 using Xamarin.Forms;
 
 namespace CovidInformer
@@ -17,14 +21,11 @@ namespace CovidInformer
             DependencyService.RegisterSingleton(new OpenApiDataProvider());
 
             MainPage = new AppShell();
+            //MainPage = new CreateDatabasePage();
         }
 
         protected override void OnStart()
         {
-            var db = DependencyService.Resolve<DatabaseContext>();
-
-            //db.Database.EnsureCreated();
-            //db.Database.Migrate();
         }
 
         protected override void OnSleep()

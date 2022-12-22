@@ -19,12 +19,19 @@ namespace CovidInformer.Services
                 if (null == instance)
                 {
                     var cultureInfo = CultureInfo.CurrentUICulture;
+                    var lang = cultureInfo.TwoLetterISOLanguageName.ToLowerInvariant();
 
-                    switch (cultureInfo.TwoLetterISOLanguageName)
+                    switch (lang)
                     {
                         case "ru":
                         {
-                            instance = new RussianPluralService(new CultureInfo(cultureInfo.TwoLetterISOLanguageName));
+                            instance = new RussianPluralService(new CultureInfo(lang));
+                            break;
+                        }
+
+                        case "en":
+                        {
+                            instance = new EnglishPluralService(new CultureInfo(lang));
                             break;
                         }
 

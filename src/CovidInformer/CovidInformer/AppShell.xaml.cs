@@ -9,7 +9,7 @@ namespace CovidInformer
         {
             InitializeComponent();
 
-            Routing.RegisterRoute(nameof(ItemDetailPage), typeof(ItemDetailPage));
+            //Routing.RegisterRoute(nameof(ItemDetailPage), typeof(ItemDetailPage));
         }
     }
 }
